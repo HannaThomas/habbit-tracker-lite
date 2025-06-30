@@ -1,6 +1,8 @@
-# Getting Started with Create React App
+# Getting Started with Habit Tracker App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is for listing the habit and mark it completed using check box.
+Using local storage to store the data.
+Persistent data with backend service for this app will be done as new project
 
 ## Available Scripts
 
