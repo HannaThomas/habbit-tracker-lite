@@ -3,61 +3,69 @@ import PoolIcon from '@mui/icons-material/Pool';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import BookIcon from '@mui/icons-material/Book';
 import XIcon from '@mui/icons-material/X';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Button, MenuItem, Select, Checkbox } from '@mui/material';
+import {
+  getHabits,
+  createHabit,
+  deleteHabitById,
+  toggleHabitById
+} from './api';
+
+const iconMap = {
+  Walk: <DirectionsWalkIcon />,
+  Book: <BookIcon />,
+  Swim: <PoolIcon />,
+  Gaming: <SportsEsportsIcon />
+}
 
 function App() {
   const [habit, setHabit] = useState('');
-  const [habitIcon, setHabitIcon] = useState(<BookIcon />);
+  const [habitIcon, setHabitIcon] = useState("Book");
   const [habits, setHabits] = useState([]);
-  const isFirstRender = useRef(true);
-  const iconMap = {
-    Walk: <DirectionsWalkIcon />,
-    Book: <BookIcon />,
-    Swim: <PoolIcon />,
-    Gaming: <SportsEsportsIcon />
-  }
+
+  //On Mounting
+  useEffect(() => {
+    getHabits().then(setHabits).catch(console.error);
+  }, []);
+
   const addHabit = () => {
+    if (!habit.trim()) return;
     const newHabit = {
-      id: Date.now(),
       text: habit,
       icon: habitIcon,
       checked: false
     }
-    setHabits([...habits, newHabit]);
-    setHabit('');
-    setHabitIcon('');
+    createHabit(newHabit).then((saved) => {
+      setHabits([...habits, saved]);
+      setHabit('');
+      setHabitIcon('Book');
+    });
   }
   const deleteHabit = (id) => {
-    setHabits(habits.filter((hab) => hab.id !== id));
+    deleteHabitById(id).then(() => {
+      setHabits(habits.filter((hab) => hab.id !== id));
+    })
   }
   const onToggle = (id) => {
-    setHabits(
-      habits.map((hab) =>
-        (hab.id === id) ? { ...hab, checked: !hab.checked } : hab
-      ))
+    toggleHabitById(id).then(() => {
+      setHabits(
+        habits.map((hab) =>
+          (hab.id === id) ? { ...hab, checked: !hab.checked } : hab
+        ))
+    })
   }
-  //On Mounting
-  useEffect(() => {
-    const savedHabits = JSON.parse(localStorage.getItem("habits"))
-    if (savedHabits) setHabits(savedHabits);
-  }, []);
-  // On update
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    localStorage.setItem("habits", JSON.stringify(habits));
-  }, [habits])
+
   return (
     <div>
       Choose an icon:<Select value={habitIcon} onChange={(e) => setHabitIcon(e.target.value)}>
-        <MenuItem value="Book"><BookIcon /></MenuItem>
-        <MenuItem value="Walk"><DirectionsWalkIcon /></MenuItem>
-        <MenuItem value="Swim"><PoolIcon /></MenuItem>
-        <MenuItem value="Gaming"><SportsEsportsIcon /></MenuItem>
+        {Object.entries(iconMap).map(([key, iconComponent]) => (
+          <MenuItem key={key} value={key}>
+            {iconComponent} {/* shows the actual icon in the dropdown */}
+          </MenuItem>
+        ))}
       </Select>
+
       <input placeholder='Add a habit' value={habit} onChange={(e) => setHabit(e.target.value)} />
       <Button variant="contained"
         onClick={addHabit}>ADD</Button>
@@ -70,7 +78,6 @@ function App() {
               onChange={() => onToggle(hab.id)} />
             {hab.text}{iconMap[hab.icon]}
             <Button onClick={() => { deleteHabit(hab.id) }}><XIcon sx={{ color: 'red' }} /></Button>
-
           </div>
         ))}
       </Box>

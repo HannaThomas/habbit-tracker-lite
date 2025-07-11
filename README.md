@@ -1,8 +1,9 @@
 # Getting Started with Habit Tracker App
 
 This project is for listing the habit and mark it completed using check box.
-Using local storage to store the data.
-Persistent data with backend service for this app will be done as new project
+Also using backend service to fetch and consume persistent data.
+For the backend service Node.js + Express (habit-tracker-service), and MongoDB with Mongoose for the database.
+
 
 ## Available Scripts
 
