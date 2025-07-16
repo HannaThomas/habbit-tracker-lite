@@ -1,7 +1,11 @@
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-import PoolIcon from '@mui/icons-material/Pool';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import BookIcon from '@mui/icons-material/Book';
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
+import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
+import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
+import DevicesIcon from '@mui/icons-material/Devices';
+import MessageIcon from '@mui/icons-material/Message';
 import XIcon from '@mui/icons-material/X';
 import { useEffect, useState } from 'react';
 import { Box, Button,Checkbox } from '@mui/material';
@@ -14,11 +18,39 @@ import './App.css';
 import CreateHabitPage from './CreateHabitPage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
-export const iconMap = {
-  Walk: <DirectionsWalkIcon />,
-  Book: <BookIcon />,
-  Swim: <PoolIcon />,
-  Gaming: <SportsEsportsIcon />
+export const categoryOptions = {
+  "Personal Growth": {
+    icon: <DirectionsWalkIcon />,
+    iconName: 'Personal'
+  },
+  "Health & Fitnes": {
+    icon: <FitnessCenterIcon />,
+    iconName: 'Health'
+  },
+  "Home & Environment": {
+    icon: <CleaningServicesIcon />,
+    iconName: 'Clean'
+  },
+  Education: {
+    icon: <BookIcon />,
+    iconName: 'Book'
+  },
+  "Mental Wellness": {
+    icon: <SelfImprovementIcon />,
+    iconName: 'Yoga'
+  },
+  "Work & Productivity": {
+    icon: <DevicesIcon />,
+    iconName: 'Work'
+  },
+  "Leisure and Fun": {
+    icon: <SportsEsportsIcon />,
+    iconName: 'Game'
+  },  
+  "Social & Relationship": {
+    icon: <MessageIcon />,
+    iconName: 'Social'
+  }
 }
 
 function App() {
@@ -55,7 +87,7 @@ function App() {
                   <Checkbox
                     checked={hab.checked}
                     onChange={() => onToggle(hab._id)} />
-                  {hab.text}{iconMap[hab.icon]}
+                  {hab.text}{categoryOptions[hab.icon]}
                   <Button onClick={() => { deleteHabit(hab._id) }}><XIcon sx={{ color: 'red' }} /></Button>
                 </div>
               ))}
@@ -65,7 +97,7 @@ function App() {
 
             </Box>
           } />
-          <Route path="/create" element={<CreateHabitPage setHabits={setHabits} habits={habits} iconMap={iconMap}/>} />
+          <Route path="/create" element={<CreateHabitPage setHabits={setHabits} habits={habits} categoryOptions={categoryOptions}/>} />
         </Routes>
       </Router>
     </div>

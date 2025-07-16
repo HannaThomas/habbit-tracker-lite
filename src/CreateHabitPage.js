@@ -3,24 +3,25 @@ import { Button, MenuItem, Select, TextField } from '@mui/material';
 import { createHabit } from './api';
 import { useNavigate } from 'react-router-dom'
 
-
-function CreateHabitPage({setHabits, habits, iconMap}) {
+function CreateHabitPage({setHabits, habits, categoryOptions}) {
     const [habit, setHabit] = useState('');
-    const [habitIcon, setHabitIcon] = useState("Book");
+    const [category, setCategory]= useState('Education')
     const navigate = useNavigate();
 
 
     const addHabit = () => {
         if (!habit.trim()) return;
+        const selected=categoryOptions[category]
         const newHabit = {
             text: habit,
-            icon: habitIcon,
+            icon: selected.iconName,
+            category,
             checked: false
         }
         createHabit(newHabit).then((saved) => {
             setHabits([...habits, saved]);
             setHabit('');
-            setHabitIcon('Book');
+            setCategory('Education');
             navigate('/');
         });
     }
@@ -28,9 +29,9 @@ function CreateHabitPage({setHabits, habits, iconMap}) {
     return (
         <div style={{ padding: '20px' }}>
             <h2>Create a New Habit</h2>
-            <Select value={habitIcon} onChange={(e) => setHabitIcon(e.target.value)}>
-                {Object.entries(iconMap).map(([key, icon]) => (
-                    <MenuItem key={key} value={key}>{icon}</MenuItem>
+            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
+                {Object.entries(categoryOptions).map(([cat, config]) => (
+                    <MenuItem key={cat} value={cat}>{config.icon}{cat}</MenuItem>
                 ))}
             </Select>
             <TextField
