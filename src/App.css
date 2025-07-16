@@ -1,0 +1,10 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.app-background {
+  background: linear-gradient(to right, #e3f2fd, #ffffff);
+  min-height: 100vh;
+  padding: 20px;
+}
