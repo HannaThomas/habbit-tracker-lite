@@ -5,18 +5,18 @@ import { useNavigate } from 'react-router-dom'
 
 function CreateHabitPage({setHabits, habits, categoryOptions}) {
     const [habit, setHabit] = useState('');
-    const [category, setCategory]= useState('Education')
+    const [category, setCategory]= useState('Education');
+    const [habitNote,setHabitNote]=useState('');
     const navigate = useNavigate();
 
 
     const addHabit = () => {
         if (!habit.trim()) return;
-        const selected=categoryOptions[category]
         const newHabit = {
             text: habit,
-            icon: selected.iconName,
             category,
-            checked: false
+            checked: false,
+            note:habitNote
         }
         createHabit(newHabit).then((saved) => {
             setHabits([...habits, saved]);
@@ -38,6 +38,12 @@ function CreateHabitPage({setHabits, habits, categoryOptions}) {
                 placeholder="Habit Name"
                 value={habit}
                 onChange={(e) => setHabit(e.target.value)}
+                style={{ marginTop: '10px', marginBottom: '10px', display: 'block' }}
+            />
+             <TextField
+                placeholder="You can add notes here"
+                value={habitNote}
+                onChange={(e) => setHabitNote(e.target.value)}
                 style={{ marginTop: '10px', marginBottom: '10px', display: 'block' }}
             />
             <Button variant="contained" onClick={addHabit}>Add Habit</Button>

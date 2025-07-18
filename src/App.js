@@ -6,9 +6,8 @@ import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
 import DevicesIcon from '@mui/icons-material/Devices';
 import MessageIcon from '@mui/icons-material/Message';
-import XIcon from '@mui/icons-material/X';
 import { useEffect, useState } from 'react';
-import { Box, Button,Checkbox } from '@mui/material';
+import { Box, Button, Dialog, DialogContent, DialogTitle,Typography } from '@mui/material';
 import {
   getHabits,
   deleteHabitById,
@@ -16,45 +15,63 @@ import {
 } from './api';
 import './App.css';
 import CreateHabitPage from './CreateHabitPage';
+import HabitCategoryGroup from './HabitCategoryGroup';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 export const categoryOptions = {
   "Personal Growth": {
     icon: <DirectionsWalkIcon />,
-    iconName: 'Personal'
+    iconName: 'Personal',
+    color: '#ffb74d'
   },
   "Health & Fitnes": {
     icon: <FitnessCenterIcon />,
-    iconName: 'Health'
+    iconName: 'Health',
+    color: '#81c784'
+
   },
   "Home & Environment": {
     icon: <CleaningServicesIcon />,
-    iconName: 'Clean'
+    iconName: 'Clean',
+    color: '#3caf50'
+
   },
   Education: {
     icon: <BookIcon />,
-    iconName: 'Book'
+    iconName: 'Book',
+    color: '#64b5f6'
+
   },
   "Mental Wellness": {
     icon: <SelfImprovementIcon />,
-    iconName: 'Yoga'
+    iconName: 'Yoga',
+    color: '#9575cd'
+
   },
   "Work & Productivity": {
     icon: <DevicesIcon />,
-    iconName: 'Work'
+    iconName: 'Work',
+    color: '#e57373'
+
   },
   "Leisure and Fun": {
     icon: <SportsEsportsIcon />,
-    iconName: 'Game'
-  },  
+    iconName: 'Game',
+    color: '#4db6ac'
+
+  },
   "Social & Relationship": {
     icon: <MessageIcon />,
-    iconName: 'Social'
+    iconName: 'Social',
+    color: '#fff176'
+
   }
 }
 
 function App() {
   const [habits, setHabits] = useState([]);
+  const [selectedNote, setSelectedNote] = useState({});
+  const [open, setOpen] = useState(false);
 
   //On Mounting
   useEffect(() => {
@@ -74,6 +91,10 @@ function App() {
         ))
     })
   }
+  const handleViewNote = (habit) => {
+    setSelectedNote({ text: habit.text, note: habit.note });
+    setOpen(true);
+  }
 
   return (
     <div className='app-background'>
@@ -82,24 +103,24 @@ function App() {
           <Route path='/' element={
             <Box>
               <h1>Habit Tracker Lite</h1>
-              {habits.map((hab) => (
-                <div key={hab._id}>
-                  <Checkbox
-                    checked={hab.checked}
-                    onChange={() => onToggle(hab._id)} />
-                  {hab.text}{categoryOptions[hab.icon]}
-                  <Button onClick={() => { deleteHabit(hab._id) }}><XIcon sx={{ color: 'red' }} /></Button>
-                </div>
-              ))}
+              <HabitCategoryGroup habits={habits} deleteHabit={deleteHabit} onToggle={onToggle} categoryOptions={categoryOptions} handleViewNote={handleViewNote} />
               <Button variant="contained" component="a" href="/create">
                 Create a new Habit
               </Button>
 
             </Box>
           } />
-          <Route path="/create" element={<CreateHabitPage setHabits={setHabits} habits={habits} categoryOptions={categoryOptions}/>} />
+          <Route path="/create" element={<CreateHabitPage setHabits={setHabits} habits={habits} categoryOptions={categoryOptions} />} />
         </Routes>
       </Router>
+      <Dialog open={open} onClose={() => { setOpen(false) }}>
+        <DialogTitle>{selectedNote.text}</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ whiteSpace: 'pre-wrap' }}>
+            {selectedNote.note}
+          </Typography>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
