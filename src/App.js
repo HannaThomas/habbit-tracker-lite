@@ -7,11 +7,12 @@ import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
 import DevicesIcon from '@mui/icons-material/Devices';
 import MessageIcon from '@mui/icons-material/Message';
 import { useEffect, useState } from 'react';
-import { Box, Button, Dialog, DialogContent, DialogTitle,Typography } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Typography } from '@mui/material';
 import {
   getHabits,
   deleteHabitById,
-  toggleHabitById
+  toggleHabitById,
+  updateHabitNote
 } from './api';
 import './App.css';
 import CreateHabitPage from './CreateHabitPage';
@@ -71,7 +72,10 @@ export const categoryOptions = {
 function App() {
   const [habits, setHabits] = useState([]);
   const [selectedNote, setSelectedNote] = useState({});
+  const [selectedHabit, setSelectedHabit] = useState({});
+  const [noteText, setNoteText] = useState('');
   const [open, setOpen] = useState(false);
+  const [noteDialogOpen, setNoteDialogOpen] = useState(false);
 
   //On Mounting
   useEffect(() => {
@@ -83,19 +87,25 @@ function App() {
       setHabits(habits.filter((hab) => hab._id !== id));
     })
   }
-  const onToggle = (id) => {
-    toggleHabitById(id).then(() => {
+  const onToggle = (id,currentChecked) => {
+    const updatedChecked = !currentChecked;
+    toggleHabitById(id,updatedChecked).then((updated) => {
       setHabits(
         habits.map((hab) =>
-          (hab._id === id) ? { ...hab, checked: !hab.checked } : hab
+          (hab._id === id) ? updated : hab
         ))
     })
   }
   const handleViewNote = (habit) => {
-    setSelectedNote({ text: habit.text, note: habit.note });
+    setSelectedNote(habit);
     setOpen(true);
   }
 
+  const handleAddNote = (habit) => {
+    setSelectedHabit(habit);
+    setNoteText(habit.note || '');
+    setNoteDialogOpen(true);
+  }
   return (
     <div className='app-background'>
       <Router>
@@ -103,7 +113,7 @@ function App() {
           <Route path='/' element={
             <Box>
               <h1>Habit Tracker Lite</h1>
-              <HabitCategoryGroup habits={habits} deleteHabit={deleteHabit} onToggle={onToggle} categoryOptions={categoryOptions} handleViewNote={handleViewNote} />
+              <HabitCategoryGroup habits={habits} deleteHabit={deleteHabit} onToggle={onToggle} categoryOptions={categoryOptions} handleViewNote={handleViewNote} handleAddNote={handleAddNote} />
               <Button variant="contained" component="a" href="/create">
                 Create a new Habit
               </Button>
@@ -120,6 +130,32 @@ function App() {
             {selectedNote.note}
           </Typography>
         </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={() => {
+            setOpen(false);
+            handleAddNote(selectedNote);
+          }}>Edit</Button>
+
+        </DialogActions>
+      </Dialog>
+      <Dialog open={noteDialogOpen} onClose={() => { setNoteDialogOpen(false) }}>
+        <DialogTitle>Add Note</DialogTitle>
+        <DialogContent>
+          <TextField value={noteText} onChange={(e) => setNoteText(e.target.value)} fullWidth
+            multiline
+            placeholder="Write your habit note..."
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setNoteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={() => {
+            updateHabitNote(selectedHabit._id, noteText).then((updated) => {
+              setHabits(habits.map((h) => h._id === selectedHabit._id ? updated : h));
+              setNoteDialogOpen(false);
+            })
+          }}>Save</Button>
+        </DialogActions>
       </Dialog>
     </div>
   );
