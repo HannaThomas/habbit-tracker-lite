@@ -22,7 +22,7 @@ function CreateHabitPage({setHabits, habits, categoryOptions}) {
             setHabits([...habits, saved]);
             setHabit('');
             setCategory('Education');
-            navigate('/');
+            navigate('/habits');
         });
     }
 

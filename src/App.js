@@ -17,6 +17,7 @@ import {
 import './App.css';
 import CreateHabitPage from './CreateHabitPage';
 import HabitCategoryGroup from './HabitCategoryGroup';
+import NavBar from './NavBar';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 export const categoryOptions = {
@@ -87,9 +88,9 @@ function App() {
       setHabits(habits.filter((hab) => hab._id !== id));
     })
   }
-  const onToggle = (id,currentChecked) => {
+  const onToggle = (id, currentChecked) => {
     const updatedChecked = !currentChecked;
-    toggleHabitById(id,updatedChecked).then((updated) => {
+    toggleHabitById(id, updatedChecked).then((updated) => {
       setHabits(
         habits.map((hab) =>
           (hab._id === id) ? updated : hab
@@ -108,16 +109,36 @@ function App() {
   }
   return (
     <div className='app-background'>
+      <NavBar />
       <Router>
         <Routes>
           <Route path='/' element={
-            <Box>
-              <h1>Habit Tracker Lite</h1>
-              <HabitCategoryGroup habits={habits} deleteHabit={deleteHabit} onToggle={onToggle} categoryOptions={categoryOptions} handleViewNote={handleViewNote} handleAddNote={handleAddNote} />
-              <Button variant="contained" component="a" href="/create">
-                Create a new Habit
+            <Box
+              sx={{
+                background: 'linear-gradient(to right, #e95499, #4febf7)',
+                height: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#fff',
+                textAlign: 'center',
+                padding: '2rem'
+              }}
+            >
+              <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>Welcome to Habit Tracker Lite</h1>
+              <Typography variant="h6" sx={{ maxWidth: '600px', marginBottom: '2rem' }}>
+                Build better habits with colorful organization and real-time progress. Start tracking what matters most to you.
+              </Typography>
+              <Button variant="contained" color="secondary" href="/create">
+                Get Started
               </Button>
+            </Box>
+          } />
 
+          <Route path='/habits' element={
+            <Box>
+              <HabitCategoryGroup habits={habits} deleteHabit={deleteHabit} onToggle={onToggle} categoryOptions={categoryOptions} handleViewNote={handleViewNote} handleAddNote={handleAddNote} />
             </Box>
           } />
           <Route path="/create" element={<CreateHabitPage setHabits={setHabits} habits={habits} categoryOptions={categoryOptions} />} />
